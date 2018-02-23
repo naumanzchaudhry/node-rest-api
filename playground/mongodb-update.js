@@ -13,10 +13,13 @@ MongoClient.connect('mongodb://127.0.0.1:27017/TodoApp', function (err, database
     db.collection('users').findOneAndUpdate({
       _id: new ObjectID('5a8f25c6840a9836d9ec0fbf')
     }, {
+
+      //This option referes to mongo update operators like (set, inc etc. )
       $set: {
         email: 'naumanzafarchaudhry@gmail.com'
       }
     }, {
+      //return original == false emans you will get the updated document.
       returnOriginal: false
     }).then( (result) => {
       console.log(JSON.stringify(result, undefined, 2))
