@@ -21,7 +21,7 @@ app.post('/todos', (req,res) => {
   })
   //save todo
   todo.save().then( (addedTodo) => {
-     console.log('Added todo succesfully', addedTodo)
+     //console.log('Added todo succesfully', addedTodo)
      res.status(200).json({message: 'Todo added succesfully', todo: addedTodo})
 
   }, (error) => {
@@ -36,3 +36,5 @@ app.post('/todos', (req,res) => {
 app.listen(3000, () =>{
   console.log('Started listening on port 3000')
 })
+
+module.exports = {app}
