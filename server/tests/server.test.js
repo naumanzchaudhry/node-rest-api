@@ -1,12 +1,14 @@
 const request = require('supertest')
 const expect = require('expect')
-
+var {ObjectID} = require('mongodb')
 var {app} = require('./../server')
 var {Todo} = require('./../models/todo')
 
 const todos_data = [{
+  _id: new ObjectID(),
   text: 'Dummy data 1'
 }, {
+  _id: new ObjectID(),
   text: 'Dummy data 2'
 }]
 
@@ -17,7 +19,7 @@ beforeEach( (done) => {
 })
 
 
-describe('Todos', () => {
+describe('POST /todos', () => {
   it('should create new todo item', (done) => {
 
     var test = 'Test todo'
@@ -60,7 +62,6 @@ describe('Todos', () => {
 
       })
 
-
   })
 
 })
@@ -82,4 +83,35 @@ describe('GET /todos', () => {
 
         })
   })
+})
+
+describe('GET /todos/:id', () => {
+  it('should get the todo with given id', (done) => {
+      request(app)
+        .get(`/todos/${todos_data[0]._id}`)
+        .expect(200)
+        .expect( (res) => {
+          expect(res.body.todo.text).toBe(todos_data[0].text)
+        })
+        .end(done)
+  })
+
+  it('should return 404 if invalid id', (done) => {
+    request(app)
+      .get(`/todos/${todos_data[0]._id}+'111'`)
+      .expect(400)
+      .expect( (res) => {
+        expect(res.body.message).toBe('Invalid ObjectID')
+      })
+      .end(done)
+  })
+
+  it('should return 404 if todo not found', (done) => {
+    request(app)
+      .get(`/todos/${new ObjectID().toHexString()}`)
+      .expect(400)
+      .end(done)
+  })
+
+
 })

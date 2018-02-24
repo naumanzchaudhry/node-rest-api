@@ -1,6 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser')
-
+var {ObjectID} = require('mongodb')
 var {mongoose} = require('./db/mongoose')
 var {Todo} = require('./models/todo')
 var {User} = require('./models/user')
@@ -44,9 +44,36 @@ app.get('/todos', (req,res) => {
   res.status(500).json({error})
 })
 
-app.listen(3000, () =>{
-  console.log('Started listening on port 3000')
+app.get('/todos/:id', (req,res) => {
+
+
+  const id =  req.params.id
+
+  //check if objectis is valid or not.
+  if (!ObjectID.isValid(id)) {
+    return res.status(400).json({message: 'Invalid ObjectID'})
+  }
+
+  Todo.findById(id).then( (todo) => {
+    if (!todo){
+      return res.status(400).json({message: 'Record not found.'})
+    }
+
+    return res.status(200).json({todo})
+
+  })
+
+}, (error) => {
+  return error;
 })
+
+
+if (!module.parent)
+{
+  app.listen(3000, () =>{
+    console.log('Started listening on port 3000')
+  })
+}
 
 
 
