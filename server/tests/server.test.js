@@ -6,10 +6,12 @@ var {Todo} = require('./../models/todo')
 
 const todos_data = [{
   _id: new ObjectID(),
-  text: 'Dummy data 1'
+  text: 'Dummy data 1',
+  completed: false
 }, {
   _id: new ObjectID(),
-  text: 'Dummy data 2'
+  text: 'Dummy data 2',
+  completed: false
 }]
 
 beforeEach( (done) => {
@@ -137,6 +139,41 @@ describe('DELETE /todos/:id', () =>{
   it('should return 404 if todo not found', (done) => {
     request(app)
       .get(`/todos/${new ObjectID().toHexString()}`)
+      .expect(404)
+      .end(done)
+  })
+})
+
+describe('PATCH /todos/:id', () => {
+  it('should update todo with given id', (done) => {
+      request(app)
+        .patch(`/todos/${todos_data[0]._id}`)
+        .send({
+          text: 'New Dummy text',
+          completed: true
+        })
+        .expect(200)
+        .expect( (res) => {
+          expect(res.body.todo.text).toBe('New Dummy text')
+          expect(res.body.todo.completed).toBe(true)
+          expect(typeof res.body.todo.completedAt).toBe('number')
+        })
+        .end(done)
+  })
+
+  it('should return 404 if invalid id', (done) => {
+    request(app)
+      .patch(`/todos/123`)
+      .expect(404)
+      .expect( (res) => {
+        expect(res.body.message).toBe('Invalid ObjectID')
+      })
+      .end(done)
+  })
+
+  it('should return 404 if todo not found', (done) => {
+    request(app)
+      .patch(`/todos/${new ObjectID().toHexString()}`)
       .expect(404)
       .end(done)
   })
