@@ -50,7 +50,7 @@ describe('POST /todos', () => {
     request(app)
       .post('/todos')
       .send({})
-      .expect(400)
+      .expect(404)
       .end((error, response) => {
         if (error){
           done(error)
@@ -99,7 +99,7 @@ describe('GET /todos/:id', () => {
   it('should return 404 if invalid id', (done) => {
     request(app)
       .get(`/todos/${todos_data[0]._id}+'111'`)
-      .expect(400)
+      .expect(404)
       .expect( (res) => {
         expect(res.body.message).toBe('Invalid ObjectID')
       })
@@ -109,9 +109,35 @@ describe('GET /todos/:id', () => {
   it('should return 404 if todo not found', (done) => {
     request(app)
       .get(`/todos/${new ObjectID().toHexString()}`)
-      .expect(400)
+      .expect(404)
+      .end(done)
+  })
+})
+
+describe('DELETE /todos/:id', () =>{
+  it('should delete todo with given id', (done) => {
+      request(app)
+        .delete(`/todos/${todos_data[0]._id}`)
+        .expect(200)
+        .expect( (res) => {
+          expect(res.body.todo._id).toBe(todos_data[0]._id.toHexString())
+        })
+        .end(done)
+  })
+  it('should return 404 if invalid id', (done) => {
+    request(app)
+      .delete(`/todos/123`)
+      .expect(404)
+      .expect( (res) => {
+        expect(res.body.message).toBe('Invalid ObjectID')
+      })
       .end(done)
   })
 
-
+  it('should return 404 if todo not found', (done) => {
+    request(app)
+      .get(`/todos/${new ObjectID().toHexString()}`)
+      .expect(404)
+      .end(done)
+  })
 })

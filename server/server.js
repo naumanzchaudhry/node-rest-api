@@ -27,7 +27,7 @@ app.post('/todos', (req,res) => {
 
   }, (error) => {
      // console.log('Unable to add new todo')
-     res.status(400).json({error: error})
+     res.status(404).json({error: error})
   })
 }, (err) => {
   // console.log('Unable to access /todos');
@@ -39,7 +39,7 @@ app.get('/todos', (req,res) => {
   var todos = Todo.find().then( (todos) => {
     res.status(200).json({todos})
   }, (error) => {
-    res.status(400).json({error})
+    res.status(404).json({error})
   })
 }, (error) => {
   res.status(500).json({error})
@@ -52,12 +52,12 @@ app.get('/todos/:id', (req,res) => {
 
   //check if objectis is valid or not.
   if (!ObjectID.isValid(id)) {
-    return res.status(400).json({message: 'Invalid ObjectID'})
+    return res.status(404).json({message: 'Invalid ObjectID'})
   }
 
   Todo.findById(id).then( (todo) => {
     if (!todo){
-      return res.status(400).json({message: 'Record not found.'})
+      return res.status(404).json({message: 'Record not found.'})
     }
 
     return res.status(200).json({todo})
@@ -68,6 +68,23 @@ app.get('/todos/:id', (req,res) => {
   return error;
 })
 
+app.delete('/todos/:id', (req,res) => {
+
+  const id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).json({message: 'Invalid ObjectID'})
+  }
+
+  Todo.findByIdAndRemove(id).then( (todo) => {
+     if(!todo) {
+       return res.status(404).json({message: 'Record not found.'})
+     }
+
+     return res.status(200).json({todo: todo})
+  }).catch((e) => {return e})
+
+})
 
 if (!module.parent)
 {
