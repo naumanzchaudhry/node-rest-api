@@ -119,6 +119,21 @@ app.patch('/todos/:id', (req,res) => {
 
 })
 
+
+app.post('/users/', (req,res) => {
+    var body = _.pick(req.body, ['email','password'])
+
+    //create new user instance.
+    var user = new User(body)
+
+    user.save().then( (user) => {
+      return res.status(200).json({user})
+    }).catch( (e) => {
+      return res.status(400).json({error: e})
+    })
+})
+
+
 if (!module.parent)
 {
   app.listen(process.env.PORT, () =>{
