@@ -7,6 +7,7 @@ var {ObjectID} = require('mongodb')
 var {mongoose} = require('./db/mongoose')
 var {Todo} = require('./models/todo')
 var {User} = require('./models/user')
+var {authenticate} = require('./middlewares/authenticate')
 
 
 var app = express();
@@ -39,7 +40,7 @@ app.post('/todos', (req,res) => {
 })
 
 
-app.get('/todos', (req,res) => {
+app.get('/todos', authenticate, (req,res) => {
   var todos = Todo.find().then( (todos) => {
     res.status(200).json({todos})
   }, (error) => {
@@ -130,13 +131,18 @@ app.post('/users/', (req,res) => {
       //return res.status(200).json({user})
       return user.generateAuthToken()
 
-    }).then((token) => {
-      res.header('x-auth', token).send(user)
+    }).then( (token) => {
+      res.header('x-auth', token).json({user})
     }).catch( (e) => {
       return res.status(400).json({error: e})
     })
 })
 
+
+
+app.get('/users/me',authenticate, (req,res) => {
+  res.status(200).json({user: req.user})
+})
 
 if (!module.parent)
 {

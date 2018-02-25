@@ -9,4 +9,6 @@ if (env === 'development'){
 }
 
 
-var SECRET = 'alpha123'
+const SECRET = 'alpha123'
+
+module.exports = {SECRET}
