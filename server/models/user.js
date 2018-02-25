@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
+
+const config = require('./../config/config')
 var UserSchema = mongoose.Schema({
   email: {
     type: String,
@@ -40,7 +42,7 @@ UserSchema.methods.toJSON = function() {
 UserSchema.methods.generateAuthToken = function () {
   var user = this
   var access = 'auth'
-  var token = jwt.sign({_id: user._id.toHexString(), access}, 'alpha123').toString()
+  var token = jwt.sign({_id: user._id.toHexString(), access}, config.SECRET).toString()
 
   user.tokens.push({access,token})
   return user.save().then( () => {
