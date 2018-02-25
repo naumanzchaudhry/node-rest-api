@@ -126,8 +126,12 @@ app.post('/users/', (req,res) => {
     //create new user instance.
     var user = new User(body)
 
-    user.save().then( (user) => {
-      return res.status(200).json({user})
+    user.save().then( () => {
+      //return res.status(200).json({user})
+      return user.generateAuthToken()
+
+    }).then((token) => {
+      res.header('x-auth', token).send(user)
     }).catch( (e) => {
       return res.status(400).json({error: e})
     })
